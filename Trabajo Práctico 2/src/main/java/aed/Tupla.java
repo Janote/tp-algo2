@@ -1,10 +1,10 @@
 package aed;
 
 public class Tupla {
-    Trie<Materia> carrera;
+    Tries<Materia> carrera;
     String nombre;
 
-    public Tupla(Trie<Materia> c, String n){
+    public Tupla(Tries<Materia> c, String n){
         this.carrera = c;
         this.nombre = n;
     }
