@@ -27,6 +27,17 @@ class TriesTests{
     }
 
     @Test
+    void comprobar_doble_insercion() {
+
+        Tries conjunto = new Tries();
+
+        conjunto.insertar("uno");
+        conjunto.insertar("uno");
+        assertEquals(1, conjunto.cantidad_de_elementos());
+    }
+
+    
+    @Test
     void insertar_elementos_distintas_ramas(){
         Tries conjunto = new Tries();
 
