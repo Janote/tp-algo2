@@ -11,7 +11,6 @@ public class Tries<T> {
         Character significado;
         boolean esPalabra;
         T valor;
-        
 
         ArrayList<Nodo> siguientes = new ArrayList<>(); // 256 posibilidades distintas (por codigo ASCII)
         // en cada una de las posiciones voy a poner el codigo ASCII que le corresponde
@@ -66,15 +65,14 @@ public class Tries<T> {
             insertarAux(k + 1, clave, valor, nuevo_nodo); // hago el paso recursivo, actualizando el caracter.
         }
 
-        else if (puntero.siguientes.get(((int) clave.charAt(k))) == null && puntero != raiz) // si en este caso no esta
-                                                                                             // creada , creo el nodo,
+        else if (puntero.siguientes.get(((int) clave.charAt(k))) == null) // si en este caso no esta
+                                                                          // creada , creo el nodo,
         // donde en el constructor le asigno el caracter.
         {
             Nodo nuevo_nodo = new Nodo(clave.charAt(k)); // creo el nuevo nodo
 
             puntero.siguientes.set((int) clave.charAt(k), nuevo_nodo); // en la posicion del codigo ASCII de mi caracter
                                                                        // , le asigno el nodo.
-
             nuevo_nodo.ancestros.add(((int) puntero.significado), puntero); // anado
 
             insertarAux(k + 1, clave, valor, nuevo_nodo); // hago el paso recursivo, actualizando el caracter.
@@ -107,7 +105,6 @@ public class Tries<T> {
 
         return esClaveAux(k + 1, clave, puntero.siguientes.get(((int) clave.charAt(k))));
 
- 
     }
 
     // requiere { esClave(clave)}
@@ -126,7 +123,8 @@ public class Tries<T> {
     }
 
     /*
-     * // Esto cuenta la cantidad de nodos que hay, la comento porque me parece que es inutil, pero la dejo por si nos sirve dsp.
+     * // Esto cuenta la cantidad de nodos que hay, la comento porque me parece que
+     * es inutil, pero la dejo por si nos sirve dsp.
      * 
      * private int cantidad_de_elementos() { // cuenta nodos
      * return cantidad_de_elementos_aux(raiz);
@@ -148,7 +146,6 @@ public class Tries<T> {
      * return contador;
      * }
      */
-
 
     // Devuelve la cantidad de claves que hay en esta instancia.
 
@@ -172,17 +169,12 @@ public class Tries<T> {
             }
 
         }
-        
-        return contador; 
+
+        return contador;
     }
 
-
-
-
     // dsp la termino, todo esto es para eliminar
-
-
-
+        /*
 
     private void eliminar(String palabra) {
         if (this.esClave(palabra) == false) {
@@ -193,19 +185,28 @@ public class Tries<T> {
 
         eliminarAux(raiz, palabra);
 
-    }
-
-    private void eliminarAux(Nodo puntero, String palabra) {
-        // Separo en casos: 1ero veo de que si uno de sus elementos no pertenezca al
-        // trie
-
-        Nodo ultimo_Nodo = iralUltimoNodo(raiz, palabra, 0);
-
-    }
-
+        }
+        
+         * 
+         private void eliminarAux(Nodo puntero, String palabra) {
+            // Separo en casos: 1ero veo de que si uno de sus elementos no pertenezca al
+            // trie
+            
+            Nodo ultimo_Nodo = iraNodo(raiz, palabra, 0);
+            
+        for (int j = 0; j < ultimo_Nodo.ancestros.size(); j++) {
+            
+        
+        
+        }
+        }
+        
+        */
     // si el ultimo nodo tiene hijos, no borrar el subarbolito
     // En otor caso, ir borrando de abajo hacia arriba , y a la primera en que tenga
     // un hijo, no borro mas.
+
+
 
     private int cantidadDehijos(Nodo puntero) {
         int contador = 0;
@@ -218,7 +219,7 @@ public class Tries<T> {
 
     }
 
-    private Nodo iralUltimoNodo(Nodo puntero, String palabra, int k) // te devuelvo la referencia del ultimo nodo.
+    private Nodo iraNodo(Nodo puntero, String palabra, int k) // te devuelvo la referencia al ultimo nodo.
     {
         Nodo temporal; // este lo uso para guardar el nodo para devolver o para la prox instrucion.
         if (k == palabra.length()) {
@@ -226,68 +227,54 @@ public class Tries<T> {
 
         }
 
-        return iralUltimoNodo(puntero.siguientes.get(((int) palabra.charAt(k))), palabra, k + 1);
+        for (int i = 0; i < puntero.siguientes.size(); i++) {
+            if (puntero.siguientes.get(i) != null && puntero.siguientes.get(i).significado == palabra.charAt(k)) {
+                iraNodo(puntero.siguientes.get(i), palabra, k + 1);
+            }
+        }
 
+        return puntero; // death code 
     }
-
-    // en cada posicion del array `lista`, es una clave, primero hago esto (anado / recupero todas las claves) y luego hago la comparacion lexi; 
-    // voy a hacer tantas iteraciones como claves tenga
 
     private ArrayList listar() // Esta tieene complejidad largo palabras + total de palabras
     {
 
         ArrayList<String> lista = new ArrayList<>(contador_de_claves());
 
-        listarAuxiliar(raiz, ""  , lista);
+        listarAuxiliar(raiz, "", lista);
 
-
-        for (int i = 0; i < lista.size(); i++) {
-            System.out.println(lista.get(i));
-        }
-        return lista; 
-
+        return lista;
 
     }
 
-    private void listarAuxiliar(Nodo puntero, String palabra , ArrayList<String> lista)
-    {
-        
-        if(puntero == null)
-        {
-            return ; 
+    private void listarAuxiliar(Nodo puntero, String palabra, ArrayList<String> lista) {
+        if (puntero == null) {
+            return;
         }
 
-        else if(puntero.esPalabra)
-        {
-            lista.add(palabra) ; 
+        if (puntero.esPalabra) {
+            lista.add(palabra);
 
         }
 
+        for (int i = 0; i < puntero.siguientes.size(); i++) {
 
+            if (puntero.siguientes.get(i) != null) {
 
-       for (int i = 0; i < puntero.siguientes.size(); i++) {
-        
+                listarAuxiliar(puntero.siguientes.get(i), palabra + puntero.siguientes.get(i).significado, lista);
 
-            if ( puntero.siguientes.get(i) != null && puntero.siguientes.get(i).esPalabra == false ) {
-
-                String nuevaPalabra = palabra + puntero.siguientes.get(i).significado ; 
-                 
-                listarAuxiliar(puntero.siguientes.get(i), nuevaPalabra, lista) ;   
             }
 
-       }
-
+        }
     }
-
-
-
-
 
     public static void main(String[] args) {
         Tries<String> prueba = new Tries<>();
 
         prueba.insertar("clavi", "valor");
-        System.out.println(prueba.contador_de_claves() );
+        prueba.insertar("clavic", "valor");
+        prueba.insertar("a", "z");
+        System.out.println(prueba.listar());
 
     }
 
