@@ -13,17 +13,21 @@ public class Tries {
 
         ArrayList<Nodo> siguientes = new ArrayList<>(); //256 posibilidades distintas (por codigo ASCII)
         // en cada una de las posiciones voy a poner el codigo ASCII que le corresponde
-        // ej: En la posicion 64 del array, le correspondara a la direccion de memoria del nodo con el significado 'A'.
+        // ej: En la posicion 64 del array, le correspondara a la direccion de memoria del nodo con el significado 'A' porque su codigo ASCII es 65.
     
+        ArrayList<Nodo> ancestros = new ArrayList<>();
+
         
     private Nodo( Character significado)
     {
         this.significado = significado ;
         esPalabra = false ; //seteo false en cada nodo creado por defecto.
         this.siguientes  = new ArrayList<>(256) ; 
+        this.ancestros = new  ArrayList<>(256) ; 
     
         for (int i = 0; i < 256; i++) {
-            siguientes.add(null) ;            
+            siguientes.add(null) ;
+            ancestros.add(null);            
         }
     }
     
@@ -61,7 +65,8 @@ private void insertarAux(int k , String valor, Nodo puntero)
 
             puntero.siguientes.set((int) valor.charAt(k), nuevo_nodo) ; // en la posicion del codigo ASCII  de mi caracter , le asigno el nodo. 
             
-            
+            // nuevo_nodo.ancestros.add(((int)puntero.significado), puntero) ;
+        
             insertarAux(k + 1 , valor, nuevo_nodo); // hago el paso recursivo, actualizando el caracter.
              
         }
@@ -73,14 +78,13 @@ private void insertarAux(int k , String valor, Nodo puntero)
 
     }
 
-
+// (int)valor.charAt(k)) esto significa pasar a codigo ASCII un caracter
 }
 
 
 
-// si le sacas el segundo if encuentra las posibles palabras.
 
-private boolean buscarPalabra(String palabra)
+private boolean buscarPalabra(String palabra) // pertenece
 {
     return buscarPalabraAux(0 , palabra,raiz);
 
@@ -134,14 +138,64 @@ private int cantidad_de_elementos_aux(Nodo puntero)
 }
 
 
+/*
+ * 
+ // dsp la termino, todo esto es para eliminar
+ private void eliminar(String palabra)
+ {
+    if(this.buscarPalabra(palabra) == false)
+    {
+        
+        System.out.println("No pertenece al trie la palabra");
 
+        }
+        
+        eliminarAux(raiz,palabra) ; 
+        
+        }
+        
+        private void eliminarAux(Nodo puntero , String palabra)
+{
+    // Separo en casos:  1ero veo de que  si uno de sus elementos no pertenezca al trie 
 
-
-
-
-
-
-public static void main(String[] args) {
+    
+    Nodo ultimo_Nodo = iralUltimoNodo(raiz, palabra, 0) ;
+    
+    }
+    
+    // si el ultimo nodo tiene hijos, no borrar el subarbolito
+    // En otor caso, ir borrando de abajo hacia arriba , y a la primera en que tenga un hijo, no borro mas.
+    
+    
+    private int cantidadDehijos(Nodo puntero)
+    {
+        int contador = 0 ; 
+    for (int i = 0; i < puntero.siguientes.size(); i++) {
+        if( puntero.siguientes.get(i) != null)
+        {
+            contador ++ ;
+            }
+            }
+            return contador;
+            
+            
+            }
+            
+            private Nodo iralUltimoNodo(Nodo puntero, String palabra, int k) // te devuelvo la referencia del ultimo nodo. 
+            {
+                Nodo temporal; // este lo uso para guardar el nodo para devolver o para la prox instrucion.
+                if(k == palabra.length())
+                {
+                    return puntero;
+                    }
+                    
+                    return iralUltimoNodo(puntero.siguientes.get(((int)palabra.charAt(k))), palabra, k + 1 ) ;
+                    
+                    
+                    }
+*/
+                    
+    public static void main(String[] args) {
     Tries prueba = new Tries();
     prueba.insertar("amor");
     System.out.println(prueba.buscarPalabra("amor")) ;
@@ -153,5 +207,5 @@ public static void main(String[] args) {
     System.out.println(prueba.buscarPalabra("lagartija")) ;
     System.out.println(prueba.cantidad_de_elementos()); //  
 }
-}
 
+}
