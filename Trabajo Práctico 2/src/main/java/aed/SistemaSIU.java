@@ -10,14 +10,10 @@ public class SistemaSIU {
         JTP,
         PROF
     }
-
-    public SistemaSIU(){
-        carreras = new Tries<Carrera>();
-        alumnos = new Tries<Integer>();
-    }
     
     public SistemaSIU(InfoMateria[] materiasEnCarreras, String[] libretasUniversitarias){
-        this();
+        carreras = new Tries<Carrera>();
+        alumnos = new Tries<Integer>();
         for (int i=0; i<materiasEnCarreras.length; i=i+1){ // O(M) recorro las materias "generales"
         Materia materia = null;
             for (int j=0; j<materiasEnCarreras[i].carreras.length; j=j+1){ // O(Nm) recorro para una materia las carreras con el nombre especifico de esa materia
@@ -88,12 +84,24 @@ public class SistemaSIU {
         Carrera valorCarrera = carreras.darValor(carrera); // O(|c|)
         Materia valorMateria = valorCarrera.materias.darValor(materia); // O(|m|)
         int[] docentes = valorMateria.docentes; // O(1)
-        int cupo = (docentes[0]*250 + docentes[1]*100 + docentes[2]*20 + docentes[3]*30);
-        if(cupo<inscriptos(materia, carrera)){
+        int cupo = cupo(docentes);
+        if(cupo<valorMateria.alumnos.longitud()){
             return true;
         }
         else{
             return false;
+        }
+    }
+
+    private int cupo(int[] docentes){
+        return minimo(250*docentes[0], minimo(100*docentes[1], minimo(20*docentes[2], 30*docentes[3])));
+    }
+
+    private int minimo(int a, int b){
+        if(a<=b){
+            return a;
+        } else{
+            return b;
         }
     }
 
