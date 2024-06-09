@@ -1,5 +1,4 @@
 package aed;
-
 import java.util.*;
 
 public class Tries<T> {
@@ -41,7 +40,7 @@ public class Tries<T> {
 
     // uso una funcion auxiliar para que cada caracter del string se anada.
 
-    private void insertar(String clave, T valor) {
+    public void insertar(String clave, T valor) {
         insertarAux(0, clave, valor, raiz);
     }
 
@@ -58,6 +57,7 @@ public class Tries<T> {
         // este if solo hago porque no quiero crearle `ancestros` a la raiz.
 
         else if (puntero.siguientes.get(((int) clave.charAt(k))) == null && puntero == raiz) {
+
             Nodo nuevo_nodo = new Nodo(clave.charAt(k));
 
             puntero.siguientes.set((int) clave.charAt(k), nuevo_nodo);
@@ -73,7 +73,7 @@ public class Tries<T> {
 
             puntero.siguientes.set((int) clave.charAt(k), nuevo_nodo); // en la posicion del codigo ASCII de mi caracter
                                                                        // , le asigno el nodo.
-            nuevo_nodo.ancestros.add(((int) puntero.significado), puntero); // anado
+            nuevo_nodo.ancestros.set(((int) puntero.significado), puntero); // anado
 
             insertarAux(k + 1, clave, valor, nuevo_nodo); // hago el paso recursivo, actualizando el caracter.
         }
@@ -85,7 +85,7 @@ public class Tries<T> {
         }
     }
 
-    private boolean esClave(String clave) // Identifica si una palabra es una clave
+    public boolean esClave(String clave) // Identifica si una palabra es una clave
     {
         return esClaveAux(0, clave, raiz);
 
@@ -108,7 +108,7 @@ public class Tries<T> {
     }
 
     // requiere { esClave(clave)}
-    private T darValor(String clave) // dada una clave(valida), devuelvo su valor.
+    public T darValor(String clave) // dada una clave(valida), devuelvo su valor.
     {
         return darValorAux(0, clave, raiz);
 
@@ -149,7 +149,7 @@ public class Tries<T> {
 
     // Devuelve la cantidad de claves que hay en esta instancia.
 
-    private int contador_de_claves() {
+    public int contador_de_claves() {
         return contador_de_clavesAux(raiz);
     }
 
@@ -173,9 +173,6 @@ public class Tries<T> {
         return contador;
     }
 
-    // dsp la termino, todo esto es para eliminar
-        /*
-
     private void eliminar(String palabra) {
         if (this.esClave(palabra) == false) {
 
@@ -183,32 +180,46 @@ public class Tries<T> {
 
         }
 
-        eliminarAux(raiz, palabra);
+        Nodo ultimo = iraNodo(raiz, palabra, 0) ;
+        ultimo.esPalabra = false;
+
+        eliminarAux(iraNodo(raiz, palabra, 0), palabra, palabra.length() - 1);
 
         }
-        
-         * 
-         private void eliminarAux(Nodo puntero, String palabra) {
-            // Separo en casos: 1ero veo de que si uno de sus elementos no pertenezca al
-            // trie
-            
-            Nodo ultimo_Nodo = iraNodo(raiz, palabra, 0);
-            
-        for (int j = 0; j < ultimo_Nodo.ancestros.size(); j++) {
-            
-        
-        
-        }
-        }
-        
-        */
+         
+    private void eliminarAux(Nodo puntero, String palabra, int indice) { // O(|clave|)
+
+    if(puntero == null )
+    {
+        return ; 
+    }
+
+    if(cantidadDehijos(puntero) > 0 || puntero.esPalabra )
+    {
+        return ;
+    }
+
+    else if(puntero.ancestros.get(((int)palabra.charAt(indice - 1 ))) != null ) 
+    {
+        puntero.ancestros.get(((int)palabra.charAt(indice - 1 ))).siguientes.set(((int)palabra.charAt(indice)), null) ; 
+        eliminarAux(puntero.ancestros.get((int) palabra.charAt(indice) - 1 ), palabra, indice - 1 ) ;
+
+
+    }
+    
+
+}
+
+
+
     // si el ultimo nodo tiene hijos, no borrar el subarbolito
     // En otor caso, ir borrando de abajo hacia arriba , y a la primera en que tenga
     // un hijo, no borro mas.
 
 
 
-    private int cantidadDehijos(Nodo puntero) {
+
+    public int cantidadDehijos(Nodo puntero) {
         int contador = 0;
         for (int i = 0; i < puntero.siguientes.size(); i++) {
             if (puntero.siguientes.get(i) != null) {
@@ -219,31 +230,48 @@ public class Tries<T> {
 
     }
 
-    private Nodo iraNodo(Nodo puntero, String palabra, int k) // te devuelvo la referencia al ultimo nodo.
+    public Nodo iraNodo( String clave)
     {
-        Nodo temporal; // este lo uso para guardar el nodo para devolver o para la prox instrucion.
+        return iraNodo(raiz, clave, 0);
+
+    }
+
+
+    public Nodo iraNodo(Nodo puntero, String palabra, int k) // te devuelvo la referencia al ultimo nodo.
+    {
         if (k == palabra.length()) {
             return puntero;
 
         }
-
-        for (int i = 0; i < puntero.siguientes.size(); i++) {
-            if (puntero.siguientes.get(i) != null && puntero.siguientes.get(i).significado == palabra.charAt(k)) {
-                iraNodo(puntero.siguientes.get(i), palabra, k + 1);
-            }
+         if(puntero.siguientes.get(((int)palabra.charAt(k))) == null)
+        {
+            return null; // esto es si la palabra/ clave no existia
         }
 
-        return puntero; // death code 
+
+        else
+        {
+            return iraNodo(puntero.siguientes.get(((int)palabra.charAt(k))), palabra, k + 1); 
+        }
+
+
+
     }
 
-    private ArrayList listar() // Esta tieene complejidad largo palabras + total de palabras
+    public String[] listar() // Esta tiene complejidad largo palabras + total de palabras
     {
 
         ArrayList<String> lista = new ArrayList<>(contador_de_claves());
+        String[] res = new String[contador_de_claves()];
 
         listarAuxiliar(raiz, "", lista);
 
-        return lista;
+        for(int i=0;i<contador_de_claves();i++){
+
+            res[i] = lista.get(i);
+        }
+
+        return res;
 
     }
 
@@ -271,11 +299,18 @@ public class Tries<T> {
     public static void main(String[] args) {
         Tries<String> prueba = new Tries<>();
 
-        prueba.insertar("clavi", "valor");
-        prueba.insertar("clavic", "valor");
-        prueba.insertar("a", "z");
-        System.out.println(prueba.listar());
+        prueba.insertar("algoritmos", "asd");
+        prueba.insertar("algebra", "21");
+        prueba.insertar("algebraz", "21");
 
+        prueba.insertar("algebrazaa", "21");
+        prueba.insertar("algebraqaa", "21");
+        prueba.insertar("algebracuu", "21");
+
+        prueba.eliminar("algoritmos");
+        prueba.eliminar("algebracuu");
+
+        System.out.println(prueba.contador_de_claves());
     }
 
 }
