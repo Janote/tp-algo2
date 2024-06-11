@@ -1,5 +1,7 @@
 package aed;
 import java.util.*;
+// Invariante de representacion
+// Los nodos tienen un solo padre, salvo la raiz que no tiene. No hay nodos inutiles, es decir, si un nodo no tiene significado debe tener hijos. Un nodo con significado puede tener cero hijos. 
 
 public class Tries<T> {
     Nodo raiz;
