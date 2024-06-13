@@ -1,5 +1,8 @@
 package aed;
-
+// Invariante de representacion
+// El siguiente al ultimo debe ser null, el anterior al primero debe ser null. 
+// Si un nodo n no es el ultimo, entonces debe existir un unico nodo m tal que el siguiente de n es m.
+// Al contar los nodos desde el primero al ultimo deberia dar el size. 
 public class ListaEnlazada<T> implements Secuencia<T> {
     private Nodo primero;
     private Nodo ultimo;
