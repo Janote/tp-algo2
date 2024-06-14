@@ -7,31 +7,25 @@ public class Tries<T> {
     /* Invariante de representacion 
     Si raiz es null, el trie esta vacio.
     Si raiz es distinto de null, el trie tiene al menos un nodo con esPalabra true (es decir, que tiene algun valor guardado)
-    Los nodos tienen un solo padre, salvo la raiz que no tiene. 
-    No hay nodos inutiles, es decir, si un nodo no tiene valor (esPalabra false) debe tener alguna de las posiciones del array hijos distinta de null. 
-    Un nodo con valor   (esPalabra true) puede tener todas las posiciones del array hijos. 
+    Los nodos tienen un solo padre, salvo la raiz que ancestro es null. 
+    No hay nodos inutiles, es decir, si un nodo no tiene valor (esPalabra false y valor=null) debe tener alguna de las posiciones del array hijos distinta de null. 
+    Un nodo con valor (esPalabra true) puede tener todas las posiciones del array hijos en null.
+    Raiz tiene significado null y ancestro null.
     */
 
     private class Nodo {
-        /*
-         *                                        Invariante
-         * Los nodos tienen un solo padre, salvo la raiz que no tiene. No hay nodos inutiles, es decir, si un nodo no tiene significado debe tener hijos. Un nodo con       significado puede tener cero hijos. 
-         * Si es la raiz, ancestro va a ser null, signiicado va a ser null , esPalabra false, valor null 
-         * Si  significado es el ultimo caracter de la palabra, .esPalabra == true y tendra un valor distinto de null.
-         * Si todos los elementos de siguientes son null, se trata de un nodo hoja
-         * 
-         * 
-         * 
-         * 
+        /* Invariante de representacion
+         Si esPalabra=true entonces valor!= null.
+         Si esPalabra=false entonces valor=null.
          */
         
-        /*                                         Descripcion de cada nodo.
-         * Cada nodo , tiene:
-         * El atributo significado, que guarda su respectiva clave.
-         * esPalabra: Si determina que ese nodo es la ultima letra de la clave
-         * valor: se guarda el valor en el ultimo nodo de la clave
-         * siguientes: siguientes es un Arraylist donde se guarda la direccion de memoria de c/nodo.
-         * ancestro : Utilizamos ancestro para decir quien es el 'padre' de nuestro nodo. 
+        /*Descripcion de cada nodo.
+         Cada nodo, tiene:
+         significado: guarda su respectiva caracter ASCII.
+         esPalabra: determina si ese nodo es la ultima letra de la clave.
+         valor: se guarda el valor asociado a la clave generada por todos los anteriores significados.
+         siguientes: es un Arraylist donde se guardan hijos de acuerdo al codigo ASCII.
+         ancestro : Utilizamos ancestro para decir quien es el 'padre' de nuestro nodo. 
          */
 
         Character significado;
@@ -112,8 +106,9 @@ public class Tries<T> {
         }
     }
 
+    // Complejidad = O(k) k=largo de la clave
 
-    public boolean esClave(String clave) // Identifica si una palabra es una clave, Complejidad O(K)
+    public boolean esClave(String clave) // Identifica si una palabra es una clave
     {
         return esClaveAux(0, clave, raiz);
 
@@ -138,7 +133,8 @@ public class Tries<T> {
 
 
     // requiere { esClave(clave)}
-    // Complejidad O(k)
+
+    // Complejidad O(k) k=largo de la clave
 
     public T darValor(String clave) // dada una clave(valida), devuelvo su valor.
     {
@@ -154,6 +150,7 @@ public class Tries<T> {
 
     }
 
+    // O(sumatoria k con k largo de palabras) 
 
     public int contador_de_claves() {
         return contador_de_clavesAux(raiz);
@@ -180,7 +177,10 @@ public class Tries<T> {
     }
 
 
-    public void eliminar(String palabra) { // O(|clave|)        
+
+    // O(|k|) k=largo de la palabra
+
+    public void eliminar(String palabra) {     
         Nodo ultimo = iraUltimoCaracterClave(palabra) ;
         ultimo.esPalabra = false; // ya no es mas palabra.
 
@@ -251,7 +251,10 @@ public class Tries<T> {
     }
     
 
-    public String[] listar() // Esta tiene complejidad largo palabras + total de palabras
+    
+    // O(sumatoria k con k largo de palabras) 
+
+    public String[] listar() 
     {
 
         ArrayList<String> lista = new ArrayList<>(contador_de_claves());
