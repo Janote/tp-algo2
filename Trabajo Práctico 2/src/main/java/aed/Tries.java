@@ -5,49 +5,58 @@ import java.util.*;
 
 public class Tries<T> {
     Nodo raiz;
-    int tamaño;
 
     private class Nodo {
+        
+        /*                                         Descripcion de cada nodo.
+         * Cada nodo , tiene:
+         * El atributo significado, que guarda su respectiva clave.
+         * esPalabra: Si determina que ese nodo es la ultima letra de la clave
+         * valor: se guarda el valor en el ultimo nodo de la clave
+         * siguientes: siguientes es un Arraylist donde se guarda la direccion de memoria de c/nodo.
+         * ancestro : Utilizamos ancestro para decir quien es el 'padre' de nuestro nodo. 
+         */
 
         Character significado;
         boolean esPalabra;
         T valor;
+        Nodo ancestro;
+        ArrayList<Nodo> siguientes = new ArrayList<>(256); // 256 posibilidades distintas (por codigo ASCII)
 
-        ArrayList<Nodo> siguientes = new ArrayList<>(); // 256 posibilidades distintas (por codigo ASCII)
-        // en cada una de las posiciones voy a poner el codigo ASCII que le corresponde
-        // ej: En la posicion 64 del array, le correspondara a la direccion de memoria
-        // del nodo con el significado 'A' porque su codigo ASCII es 65.
+        private Nodo(Character significado , Nodo ancestro) {
 
-        ArrayList<Nodo> ancestros = new ArrayList<>();
-
-        private Nodo(Character significado) {
             this.significado = significado;
-            esPalabra = false; // seteo false en cada nodo creado por defecto.
-            this.siguientes = new ArrayList<>(256);
-            this.ancestros = new ArrayList<>(256);
-            this.valor = null; // creo por defecto el nodo sin valor , es decir que
-            for (int i = 0; i < 256; i++) { // O(256) == O(1) xq existe c tal que 256 <= 1 * c
-                siguientes.add(null);
-                ancestros.add(null);
+            esPalabra = false; // setea false en cada nodo creado por defecto.
+            this.ancestro = ancestro;  
+            valor = null;
+            for (int i = 0; i < 256; i++) { // queda definida una lista de 256 elementos que estan todos en null
+                this.siguientes.add(null);  
             }
         }
 
     }
 
     public Tries() {
-        Nodo nuevo_nodo = new Nodo(null);
+        Nodo nuevo_nodo = new Nodo(null, null);
         raiz = nuevo_nodo;
 
     }
+    /*
+     *                                  Idea del insertar:
+     * La idea de hacer el insertar es por cada llamado recursivo en insertarAux es ir agregando cada letra de la  clave
+     * 
+     * Ej: si tengo de clave: "computacion"   
+     * 
+     */
 
-    // uso una funcion auxiliar para que cada caracter del string se anada.
+
+     // Complejidad: 0(k) ;  k == largo de la clave
 
     public void insertar(String clave, T valor) {
         insertarAux(0, clave, valor, raiz);
     }
 
-    private void insertarAux(int k, String clave, T valor, Nodo puntero) { // Inserta en el trie, una clave, con su
-                                                                           // respectivo valor.
+    private void insertarAux(int k, String clave, T valor, Nodo puntero) { 
 
         if (k == clave.length()) {
 
@@ -56,26 +65,25 @@ public class Tries<T> {
             return;
 
         }
-        // este if solo hago porque no quiero crearle `ancestros` a la raiz.
+        // este if solo hago porque no quiero crear `ancestro` a la raiz.
 
         else if (puntero.siguientes.get(((int) clave.charAt(k))) == null && puntero == raiz) {
 
-            Nodo nuevo_nodo = new Nodo(clave.charAt(k));
+            Nodo nuevo_nodo = new Nodo(clave.charAt(k),null);
 
             puntero.siguientes.set((int) clave.charAt(k), nuevo_nodo);
+
+            // No digo nada sobre ancestro, porque cuando creo el nodo ya  es null por defecto.
 
             insertarAux(k + 1, clave, valor, nuevo_nodo); // hago el paso recursivo, actualizando el caracter.
         }
 
-        else if (puntero.siguientes.get(((int) clave.charAt(k))) == null) // si en este caso no esta
-                                                                          // creada , creo el nodo,
+        else if (puntero.siguientes.get(((int) clave.charAt(k))) == null) // El nodo no fue creado aun, toca agregarlo.
         // donde en el constructor le asigno el caracter.
         {
-            Nodo nuevo_nodo = new Nodo(clave.charAt(k)); // creo el nuevo nodo
+            Nodo nuevo_nodo = new Nodo(clave.charAt(k), puntero); 
 
             puntero.siguientes.set((int) clave.charAt(k), nuevo_nodo); // en la posicion del codigo ASCII de mi caracter
-                                                                       // , le asigno el nodo.
-            nuevo_nodo.ancestros.set(((int) puntero.significado), puntero); // anado
 
             insertarAux(k + 1, clave, valor, nuevo_nodo); // hago el paso recursivo, actualizando el caracter.
         }
@@ -87,21 +95,23 @@ public class Tries<T> {
         }
     }
 
-    public boolean esClave(String clave) // Identifica si una palabra es una clave
+
+    public boolean esClave(String clave) // Identifica si una palabra es una clave, Complejidad O(K)
     {
         return esClaveAux(0, clave, raiz);
 
     }
 
     private boolean esClaveAux(int k, String clave, Nodo puntero) {
-        if (k == clave.length() && puntero.esPalabra == true) {
+
+        if (k == clave.length() && puntero.esPalabra == true) { 
             return true;
         }
 
-        if (k == clave.length() && puntero.esPalabra == false) {
+        else if (k == clave.length() && puntero.esPalabra == false) { // no es clave, es 'subclave'
             return false;
         }
-        if (puntero.siguientes.get(((int) clave.charAt(k))) == null) {
+        else if (puntero.siguientes.get(((int) clave.charAt(k))) == null) { // el caracter no pertenece
             return false;
         }
 
@@ -109,7 +119,10 @@ public class Tries<T> {
 
     }
 
+
     // requiere { esClave(clave)}
+    // Complejidad O(k)
+
     public T darValor(String clave) // dada una clave(valida), devuelvo su valor.
     {
         return darValorAux(0, clave, raiz);
@@ -149,7 +162,8 @@ public class Tries<T> {
      * }
      */
 
-    // Devuelve la cantidad de claves que hay en esta instancia.
+
+    // Devuelve la cantidad de claves que hay.
 
     public int contador_de_claves() {
         return contador_de_clavesAux(raiz);
@@ -175,21 +189,22 @@ public class Tries<T> {
         return contador;
     }
 
-    private void eliminar(String palabra) {
-        if (this.esClave(palabra) == false) {
+
+    private void eliminar(String palabra) { // O(|clave|)
+        if (esClave(palabra) == false) {
 
             System.out.println("No pertenece al trie la palabra");
 
         }
+        
+        Nodo ultimo = iraUltimoCaracterClave(palabra) ;
+        ultimo.esPalabra = false; // ya no es mas palabra.
 
-        Nodo ultimo = iraNodo(raiz, palabra, 0) ;
-        ultimo.esPalabra = false;
-
-        eliminarAux(iraNodo(raiz, palabra, 0), palabra, palabra.length() - 1);
+        eliminarAux( ultimo , palabra, palabra.length() - 1);
 
         }
          
-    private void eliminarAux(Nodo puntero, String palabra, int indice) { // O(|clave|)
+    private void eliminarAux(Nodo puntero, String palabra, int indice) { 
 
     if(puntero == null )
     {
@@ -201,25 +216,15 @@ public class Tries<T> {
         return ;
     }
 
-    else if(puntero.ancestros.get(((int)palabra.charAt(indice - 1 ))) != null ) 
+    else if(puntero.ancestro != null ) 
     {
-        puntero.ancestros.get(((int)palabra.charAt(indice - 1 ))).siguientes.set(((int)palabra.charAt(indice)), null) ; 
-        eliminarAux(puntero.ancestros.get((int) palabra.charAt(indice) - 1 ), palabra, indice - 1 ) ;
-
-
+        puntero.ancestro.siguientes.set(((int)palabra.charAt(indice)), null) ; 
+        eliminarAux(puntero.ancestro, palabra, indice - 1 ) ;
+        
     }
     
 
 }
-
-
-
-    // si el ultimo nodo tiene hijos, no borrar el subarbolito
-    // En otor caso, ir borrando de abajo hacia arriba , y a la primera en que tenga
-    // un hijo, no borro mas.
-
-
-
 
     public int cantidadDehijos(Nodo puntero) {
         int contador = 0;
@@ -232,14 +237,15 @@ public class Tries<T> {
 
     }
 
-    public Nodo iraNodo( String clave)
+    // Lo que hace esta funcion es guardarse el nodo del ultimo caracter.
+    public Nodo iraUltimoCaracterClave( String clave)
     {
-        return iraNodo(raiz, clave, 0);
+        return iraUltimoCaracterClaveAux(raiz, clave, 0);
 
     }
 
 
-    public Nodo iraNodo(Nodo puntero, String palabra, int k) // te devuelvo la referencia al ultimo nodo.
+    public Nodo iraUltimoCaracterClaveAux(Nodo puntero, String palabra, int k) // te devuelvo la referencia al ultimo nodo.
     {
         if (k == palabra.length()) {
             return puntero;
@@ -253,12 +259,13 @@ public class Tries<T> {
 
         else
         {
-            return iraNodo(puntero.siguientes.get(((int)palabra.charAt(k))), palabra, k + 1); 
+            return iraUltimoCaracterClaveAux(puntero.siguientes.get(((int)palabra.charAt(k))), palabra, k + 1); 
         }
 
 
 
     }
+    
 
     public String[] listar() // Esta tiene complejidad largo palabras + total de palabras
     {
@@ -297,22 +304,4 @@ public class Tries<T> {
 
         }
     }
-
-    public static void main(String[] args) {
-        Tries<String> prueba = new Tries<>();
-
-        prueba.insertar("algoritmos", "asd");
-        prueba.insertar("algebra", "21");
-        prueba.insertar("algebraz", "21");
-
-        prueba.insertar("algebrazaa", "21");
-        prueba.insertar("algebraqaa", "21");
-        prueba.insertar("algebracuu", "21");
-
-        prueba.eliminar("algoritmos");
-        prueba.eliminar("algebracuu");
-
-        System.out.println(prueba.contador_de_claves());
-    }
-
 }

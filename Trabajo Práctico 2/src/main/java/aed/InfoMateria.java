@@ -8,4 +8,6 @@ public class InfoMateria{
         this.carreras = carreras;
         this.nombresEnCarreras = nombresEnCarreras;
     }
+
+
 }

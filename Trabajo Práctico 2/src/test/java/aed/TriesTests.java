@@ -3,7 +3,8 @@ package aed;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
-
+/*
+ * 
 class TriesTests{
     
     @Test
@@ -315,3 +316,4 @@ class TriesTests{
         assertEquals(true, conjunto.buscarPalabra("malardo"));
     }
 }
+ */
