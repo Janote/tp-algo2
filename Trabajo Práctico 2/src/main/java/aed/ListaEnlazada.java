@@ -1,13 +1,15 @@
 package aed;
-// Invariante de representacion
-// El siguiente al ultimo debe ser null, el anterior al primero debe ser null. 
-// Si un nodo n no es el ultimo, entonces debe existir un unico nodo m tal que el siguiente de n es m.
-// Al contar los nodos desde el primero al ultimo deberia dar el size. 
+
 public class ListaEnlazada<T> implements Secuencia<T> {
     private Nodo primero;
     private Nodo ultimo;
     private int size;
-
+ 
+// Invariante de representacion
+// El siguiente al ultimo debe ser null, el anterior al primero debe ser null. 
+// Si un nodo n no es el ultimo, entonces debe existir un unico nodo m tal que el siguiente de n es m.
+// No hay ciclos.
+// size representa la cantidad de nodos recorridos desde el primero hasta el ultimo.
 
     private class Nodo {
         T valor;
@@ -21,17 +23,17 @@ public class ListaEnlazada<T> implements Secuencia<T> {
         }
     }
 
-    public ListaEnlazada() {
+    public ListaEnlazada() { //O(1)
         primero = null;
         ultimo = null;
         size = 0;
     }
 
-    public int longitud() {
+    public int longitud() { //O(1)
         return size;
     }
 
-    public void agregarAdelante(T elem) {
+    public void agregarAdelante(T elem) { //O(1)
         Nodo nuevo = new Nodo(elem);
         if (size == 0) {
             primero = nuevo;
@@ -44,7 +46,7 @@ public class ListaEnlazada<T> implements Secuencia<T> {
         size += 1;
     }
 
-    public void agregarAtras(T elem) {
+    public void agregarAtras(T elem) { //O(1)
         Nodo nuevo = new Nodo(elem);
         if (size == 0) {
             primero = nuevo;
@@ -57,7 +59,7 @@ public class ListaEnlazada<T> implements Secuencia<T> {
         size += 1;
     }
 
-    public T obtener(int i) {
+    public T obtener(int i) { 
         int contador = 0;
         Nodo actual = primero;
         while (contador < i){
@@ -65,7 +67,8 @@ public class ListaEnlazada<T> implements Secuencia<T> {
             contador += 1;
         }
         return actual.valor;
-    }
+    } // O(n) n = cantidad de elementos en la lista
+
 
     public void eliminar(int i) {
         Nodo actual = primero;
@@ -80,7 +83,7 @@ public class ListaEnlazada<T> implements Secuencia<T> {
             prev.sig = actual.sig;
         }
         size -= 1;
-    }
+    } // O(n) n = cantidad de elementos en la lista
 
     public void modificarPosicion(int indice, T elem) {
         int contador = 0;
@@ -107,7 +110,7 @@ public class ListaEnlazada<T> implements Secuencia<T> {
             nuevo.sig = actual.sig;
             nuevo.ant = actual.ant;
         }
-    }
+    } // O(n) n = cantidad de elementos en la lista
 
     public ListaEnlazada<T> copiar() {
         ListaEnlazada<T> nuevaLista = new ListaEnlazada<>();
@@ -118,7 +121,7 @@ public class ListaEnlazada<T> implements Secuencia<T> {
         }
         nuevaLista.size = size;
         return nuevaLista;
-    }
+    } // O(n) n = cantidad de elementos en la lista
 
     public ListaEnlazada(ListaEnlazada<T> lista) {
         Nodo actual = lista.primero;
@@ -126,7 +129,7 @@ public class ListaEnlazada<T> implements Secuencia<T> {
             this.agregarAtras(actual.valor);
             actual = actual.sig;
         }
-    }
+    } // O(n) n = cantidad de elementos en la lista
     
     @Override
     public String toString() {
@@ -142,11 +145,11 @@ public class ListaEnlazada<T> implements Secuencia<T> {
             actual = actual.sig;
         }
         return lista;
-    }
+    } // O(n) n = cantidad de elementos en la lista
 
     public Iterador<T> iterador() {
 	    return new ListaIterador();
-    }
+    } // O(1)
 
     private class ListaIterador implements Iterador<T> {
     	int dedito;
@@ -185,6 +188,6 @@ public class ListaEnlazada<T> implements Secuencia<T> {
             dedito = dedito - 1;
             return valor;
         }
-    }
+    } 
 
 }
